@@ -1,0 +1,14 @@
+/*
+* @Author: Bartuccio Antoine
+* @Date:   2018-09-15 23:50:05
+* @Last Modified by:   klmp200
+* @Last Modified time: 2018-09-15 23:51:48
+*/
+
+/* Push content under the navigation bar */
+@media (min-width: 980px) {
+  body {
+    padding-top: 60px;
+    padding-bottom: 42px;
+  }
+}

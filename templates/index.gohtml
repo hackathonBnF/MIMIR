@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Mimir</title>
+
+	<link rel="stylesheet" type="text/css" href="/static/css/main.css">
+	<script type="text/javascript" src="/static/deps/popper/popper.min.js"></script>
+	<script type="text/javascript" src="/static/deps/popper/tooltip.min.js"></script>
+	<script type="text/javascript" src="/static/deps/jquery/jquery.min.js"></script>
+
+	{[{ if .debug }]}
+
+	<link rel="stylesheet" type="text/css" href="/static/deps/bootstrap/css/bootstrap.css">
+	<script type="text/javascript" src="/static/deps/vuejs/vue.dev.js"></script>
+	<script type="text/javascript" src="/static/deps/axios/axios.js"></script>
+	<script type="text/javascript" src="/static/deps/fontawesome/js/all.js"></script>
+
+	{[{ else }]}
+
+	<link rel="stylesheet" type="text/css" href="/static/deps/bootstrap/css/bootstrap.min.css">
+	<script type="text/javascript" src="/static/deps/vuejs/vue.min.js"></script>
+	<script type="text/javascript" src="/static/deps/axios/axios.min.js"></script>
+	<script type="text/javascript" src="/static/deps/fontawesome/js/all.min.js"></script>
+
+	{[{ end }]}
+
+</head>
+<body>
+
+<div id="app">
+		<!-- Navigation bar -->
+		<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+			<a class="navbar-brand" href="#">Mimir</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarCollapse">
+				<ul class="navbar-nav mr-auto">
+					<li class="nav-item" v-on:click="navbarSelect('isMovies')" v-bind:class="{ active: navbarActive.isMovies }">
+						<a class="nav-link" href="#"><i class="fas fa-film"></i> Films</a>
+					</li>
+					<li class="nav-item" v-on:click="navbarSelect('isSeries')" v-bind:class="{ active: navbarActive.isSeries }">
+						<a class="nav-link" href="#"><i class="fas fa-tv"></i> Séries</a>
+					</li>
+					<li class="nav-item" v-on:click="navbarSelect('isBooks')" v-bind:class="{ active: navbarActive.isBooks }">
+						<a class="nav-link" href="#"><i class="fas fa-book"></i> Livres</a>
+					</li>
+					<li class="nav-item" v-on:click="navbarSelect('isBd')" v-bind:class="{ active: navbarActive.isBd }">
+						<a class="nav-link" href="#"><i class="fas fa-book-open"></i> Bandes dessinées</a>
+					</li>
+					<li class="nav-item" v-on:click="navbarSelect('isVideoGames')" v-bind:class="{ active: navbarActive.isVideoGames }">
+						<a class="nav-link" href="#"><i class="fas fa-gamepad"></i> Jeux Vidéos</a>
+					</li>
+					<li class="nav-item" v-on:click="navbarSelect('isDiscover')" v-bind:class="{ active: navbarActive.isDiscover }">
+						<a class="nav-link" href="#"><i class="fas fa-atom"></i> Relations</a>
+					</li>
+				</ul>
+				<button class="btn btn-outline-success mr-sm-2" v-on:click="showAdvancedSearch">Recherche Avancée</button>
+				<form class="form-inline mt-2 mt-md-0" v-on:submit.prevent>
+					<div v-if="!advancedSearch">
+						<input class="form-control mr-sm-2" type="text" placeholder="Recherche de média" aria-label="Recherche" v-model="searchedTitle">
+						<button class="btn btn-outline-success my-2 my-sm-0" v-on:click="searchMedia(true)">Recherche</button>
+					</div>
+				</form>
+			</div>
+		</nav>
+		<!-- End of navigation bar -->
+
+	<div class="container" v-if="advancedSearch">
+		<form class="mt-2 mt-md-0" v-on:submit.prevent>
+		<div class="form-group">
+			<input class="form-control" type="text" placeholder="Titre de média" aria-label="Recherche" v-model="searchedTitle">
+		</div>
+		<div class="form-group">
+			<input type="number" name="Année de sortie" min="1800" v-model="searchedYear"/>
+		</div>
+		<div class="form-group">
+			<button class="btn btn-outline-success my-2 my-sm-0" v-on:click="searchMedia(true)">Recherche</button>
+		</div>
+		</form>
+	</div>
+
+	<div class="container">
+		<div v-if="navbarActive.isMovies">
+			<media-card v-for="(media, index) in medias.Movies" :media="media"></media-card>
+		</div>
+		<div v-if="navbarActive.isSeries">
+			<media-card v-for="(media, index) in medias.Series" :media="media"></media-card>
+		</div>
+		<div v-if="navbarActive.isBooks">
+			<media-card v-for="(media, index) in medias.Books" :media="media"></media-card>
+		</div>
+		<div v-if="navbarActive.isBd">
+			<media-card v-for="(media, index) in medias.GraphicNovels" :media="media"></media-card>
+		</div>
+		<div v-if="navbarActive.isVideoGames">
+			<media-card v-for="(media, index) in medias.VideoGames" :media="media"></media-card>
+		</div>
+		<div v-if="navbarActive.isDiscover">
+			<media-card v-for="(media, index) in medias.Discovers" :media="media"></media-card>
+		</div>
+	</div>
+	<nav aria-label="Pagination" class="fixed-bottom mx-auto" style="width: 200px;">
+		<ul class="pagination justify-content">
+			<li class="page-item"><a class="page-link" v-on:click="goToPage(page-1)" href="#"><i class="fas fa-arrow-left"></i></a></li>
+			<li class="page-item"><a class="page-link" href="#">{{ page }}</a></li>
+			<li class="page-item"><a class="page-link" v-on:click="goToPage(page+1)" href="#"><i class="fas fa-arrow-right"></i></a></li>
+		</ul>
+	</nav>
+</div>
+
+</body>
+<footer>
+	<script type="text/javascript" src="/static/js/index.js"></script>
+</footer>
+</html>
